@@ -1,6 +1,11 @@
 package com.example.tacspringdemo.controller;
 
+import com.example.tacspringdemo.dto.PessoaDTO;
 import com.example.tacspringdemo.model.Pessoa;
+import com.example.tacspringdemo.service.PessoaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -8,6 +13,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/pessoa")
 public class PessoaController {
+
+    @Autowired
+    private PessoaService pessoaService;
 
     @GetMapping("id")
     public String get(@PathVariable("id") String id){
@@ -20,10 +28,14 @@ public class PessoaController {
     }
 
     @PostMapping
-    public Pessoa create(@RequestBody Pessoa pessoa) {
-        System.out.println(pessoa);
-        pessoa.setId(UUID.randomUUID());
-        return pessoa;
+    public ResponseEntity<Object> create(@RequestBody PessoaDTO dto) {
+        try {
+            var res = pessoaService.create(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(res);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+//        pessoa.setId();
     }
 
     @PutMapping("/{id}")
